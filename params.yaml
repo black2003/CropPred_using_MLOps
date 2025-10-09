@@ -1,0 +1,28 @@
+# Parameters for ML Pipeline
+data:
+  source: "data/Crop_recommendation.csv"
+  processed: "data/processed_data.csv"
+
+preprocessing:
+  drop_duplicates: true
+  fill_missing_strategy: "median"
+  encode_categorical: true
+  target_column: "label"
+
+model:
+  algorithm: "RandomForest"
+  n_estimators: 100
+  random_state: 42
+  
+training:
+  test_size: 0.2
+  random_state: 42
+  
+evaluation:
+  cv_folds: 5
+  metrics_file: "metrics/metrics.json"
+  
+outputs:
+  model_file: "models/model.pkl"
+  feature_importance_plot: "plots/feature_importance.png"
+  confusion_matrix_plot: "plots/confusion_matrix.png"
