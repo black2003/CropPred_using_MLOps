@@ -1,6 +1,6 @@
 [core]
-    remote = s3connection
+    remote = myremote
 ['remote "myremote"']
-    url = s3://my-bucket/dvc-storage
+    url = s3://arghya-storethedata-ops
 ['remote "s3connection"']
     url = s3://arghya-storethedata-ops
