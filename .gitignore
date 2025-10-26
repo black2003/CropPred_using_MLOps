@@ -39,13 +39,12 @@ ENV/
 .vscode/
 
 # Model artifacts (tracked by DVC)
-models/*.pkl
-data/*.pkl
-!data/Crop_recommendation.csv
+
+
+
 
 # Generated plots and metrics
-plots/
-metrics/
+
 
 # OS
 .DS_Store
