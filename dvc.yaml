@@ -46,6 +46,15 @@ stages:
     params:
       - model.algorithm
       - model.n_estimators
+      - model.max_depth
+      - model.min_samples_split
+      - model.min_samples_leaf
+      - model.max_features
+      - model.max_leaf_nodes
+      - model.min_impurity_decrease
+      - model.bootstrap
+      - model.oob_score
+      - model.criterion
       - model.random_state
       - training.test_size
       - training.random_state

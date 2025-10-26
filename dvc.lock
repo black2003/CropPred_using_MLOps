@@ -1,0 +1,160 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/data_ingestion.py
+    deps:
+    - path: data/Crop_recommendation.csv
+      hash: md5
+      md5: 5e743dd4cf49f84d23a904cd51c9b5b8
+      size: 150034
+      isexec: true
+    - path: src/data_ingestion.py
+      hash: md5
+      md5: 0c1c2f09e993cf3dc79a888b16770095
+      size: 920
+      isexec: true
+    params:
+      params.yaml:
+        data.source: data/Crop_recommendation.csv
+    outs:
+    - path: data/raw_data.pkl
+      hash: md5
+      md5: 769df0485a7dc9c26a2d2b8c2340581f
+      size: 128653
+      isexec: true
+  data_preprocessing:
+    cmd: python src/data_preprocessing.py
+    deps:
+    - path: data/raw_data.pkl
+      hash: md5
+      md5: 769df0485a7dc9c26a2d2b8c2340581f
+      size: 128653
+      isexec: true
+    - path: src/data_preprocessing.py
+      hash: md5
+      md5: d0915987a860b74d15e186bd2c3ef9b1
+      size: 1454
+      isexec: true
+    params:
+      params.yaml:
+        preprocessing.drop_duplicates: true
+        preprocessing.encode_categorical: true
+        preprocessing.fill_missing_strategy: median
+        preprocessing.target_column: label
+    outs:
+    - path: data/processed_data.pkl
+      hash: md5
+      md5: 04a458096a7ac2e19b6c23a26dddb6e7
+      size: 141996
+      isexec: true
+  feature_engineering:
+    cmd: python src/feature_engineering.py
+    deps:
+    - path: data/processed_data.pkl
+      hash: md5
+      md5: 04a458096a7ac2e19b6c23a26dddb6e7
+      size: 141996
+      isexec: true
+    - path: src/feature_engineering.py
+      hash: md5
+      md5: e6c0700f32950f1b48f1bc3839cad6f7
+      size: 993
+      isexec: true
+    params:
+      params.yaml:
+        preprocessing.target_column: label
+    outs:
+    - path: data/features.pkl
+      hash: md5
+      md5: c6ff9f824fb87ceec89ca6454eb634a2
+      size: 124289
+      isexec: true
+    - path: data/target.pkl
+      hash: md5
+      md5: a10751aec899e583837b8ab12789f144
+      size: 18222
+      isexec: true
+  model_training:
+    cmd: python src/model_engineering.py
+    deps:
+    - path: data/features.pkl
+      hash: md5
+      md5: c6ff9f824fb87ceec89ca6454eb634a2
+      size: 124289
+      isexec: true
+    - path: data/target.pkl
+      hash: md5
+      md5: a10751aec899e583837b8ab12789f144
+      size: 18222
+      isexec: true
+    - path: src/model_engineering.py
+      hash: md5
+      md5: 7ab3c5094477edb9dc24a18696347204
+      size: 1599
+      isexec: true
+    params:
+      params.yaml:
+        model.algorithm: RandomForest
+        model.n_estimators: 100
+        model.random_state: 42
+        training.random_state: 42
+        training.test_size: 0.2
+    outs:
+    - path: data/test_features.pkl
+      hash: md5
+      md5: 627d816bc552395838de2e0515d1f0e8
+      size: 29240
+      isexec: true
+    - path: data/test_target.pkl
+      hash: md5
+      md5: 25f8b34f7fdbda8be5b695512ba28aad
+      size: 11220
+      isexec: true
+    - path: models/model.pkl
+      hash: md5
+      md5: 3d1cb6c5f3757d50bf2c4c707b716da6
+      size: 3540030
+      isexec: true
+  model_evaluation:
+    cmd: python src/model_evaluation.py
+    deps:
+    - path: data/test_features.pkl
+      hash: md5
+      md5: 627d816bc552395838de2e0515d1f0e8
+      size: 29240
+      isexec: true
+    - path: data/test_target.pkl
+      hash: md5
+      md5: 25f8b34f7fdbda8be5b695512ba28aad
+      size: 11220
+      isexec: true
+    - path: models/model.pkl
+      hash: md5
+      md5: 3d1cb6c5f3757d50bf2c4c707b716da6
+      size: 3540030
+      isexec: true
+    - path: src/model_evaluation.py
+      hash: md5
+      md5: d148ecb5a39e64f74693f244c159aff3
+      size: 2891
+      isexec: true
+    params:
+      params.yaml:
+        evaluation.cv_folds: 5
+        evaluation.metrics_file: metrics/metrics.json
+    outs:
+    - path: metrics/metrics.json
+      hash: md5
+      md5: d3e91597e6d7cff81d014359dec6310d
+      size: 121
+      isexec: true
+    - path: plots/confusion_matrix.png
+      hash: md5
+      md5: d243edea22f79cf5851b0b6cf7f57f67
+      size: 187984
+      isexec: true
+    - path: plots/feature_importance.png
+      hash: md5
+      md5: bb0e3ae3bf84bb1073c7b8c7439c6f5b
+      size: 57549
+      isexec: true

@@ -6,7 +6,7 @@ from sklearn.preprocessing import LabelEncoder
 
 def load_params():
     """Load parameters from params.yaml"""
-    with open("../params.yaml", "r") as f:
+    with open("params.yaml", "r") as f:
         params = yaml.safe_load(f)
     return params
 
@@ -24,7 +24,7 @@ def preprocess_data():
     params = load_params()
     
     # Load raw data
-    with open("../data/raw_data.pkl", "rb") as f:
+    with open("data/raw_data.pkl", "rb") as f:
         df = pickle.load(f)
     
     # Drop duplicates if configured
@@ -44,7 +44,7 @@ def preprocess_data():
     print("Data preprocessing completed.")
     
     # Save processed data
-    with open("../data/processed_data.pkl", "wb") as f:
+    with open("data/processed_data.pkl", "wb") as f:
         pickle.dump(df, f)
     
     return df

@@ -22,9 +22,14 @@ This project implements a complete MLOps pipeline for crop recommendation using 
 │   ├── model_engineering.py       # Model training
 │   ├── model_evaluation.py        # Model evaluation and visualization
 │   └── run_pipeline.py            # Complete pipeline runner
+├── run_experiments.sh              # Bash script for 12 experiments
+├── run_experiments.ps1             # PowerShell script for 12 experiments
+├── run_grid_experiments.sh         # Bash script for grid search (48 experiments)
+├── run_grid_experiments.ps1        # PowerShell script for grid search
 ├── params.yaml                     # Pipeline parameters
 ├── dvc.yaml                        # DVC pipeline configuration
 ├── requirements.txt                # Python dependencies
+├── EXPERIMENTS_GUIDE.md            # Detailed guide for running experiments
 └── MLOPS.ipynb                     # Jupyter notebook version
 ```
 
@@ -96,9 +101,52 @@ python src/model_evaluation.py
 All pipeline parameters are centralized in `params.yaml`:
 
 - **Data paths and preprocessing settings**
-- **Model hyperparameters**
+- **Model hyperparameters** (11 Random Forest parameters)
 - **Training configuration**
 - **Output paths**
+
+### Available Hyperparameters
+- `n_estimators`: Number of trees in the forest
+- `max_depth`: Maximum depth of trees
+- `min_samples_split`: Minimum samples to split a node
+- `min_samples_leaf`: Minimum samples at leaf nodes
+- `max_features`: Features to consider for splits
+- `criterion`: Split quality measure (gini/entropy)
+- And more... (see `params.yaml` for complete list)
+
+## Running Experiments
+
+### Quick Experiments (12 configurations)
+```bash
+# Linux/Mac/WSL
+bash run_experiments.sh
+
+# Windows PowerShell
+.\run_experiments.ps1
+```
+
+### Grid Search (48 combinations)
+```bash
+# Linux/Mac/WSL
+bash run_grid_experiments.sh
+
+# Windows PowerShell
+.\run_grid_experiments.ps1
+```
+
+### View Experiment Results
+```bash
+# Show all experiments
+dvc exp show
+
+# Show sorted by accuracy
+dvc exp show --sort-by=metrics.json:accuracy --sort-order=desc
+
+# Compare experiments
+dvc exp diff
+```
+
+📖 **For detailed experimentation guide, see [EXPERIMENTS_GUIDE.md](EXPERIMENTS_GUIDE.md)**
 
 ## Outputs
 

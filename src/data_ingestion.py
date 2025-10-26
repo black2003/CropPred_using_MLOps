@@ -5,7 +5,7 @@ import os
 
 def load_params():
     """Load parameters from params.yaml"""
-    with open("../params.yaml", "r") as f:
+    with open("params.yaml", "r") as f:
         params = yaml.safe_load(f)
     return params
 
@@ -24,8 +24,8 @@ def load_data():
         print(f"Data loaded successfully. Shape: {df.shape}")
         
         # Save raw data for next stage
-        os.makedirs("../data", exist_ok=True)
-        with open("../data/raw_data.pkl", "wb") as f:
+        os.makedirs("data", exist_ok=True)
+        with open("data/raw_data.pkl", "wb") as f:
             pickle.dump(df, f)
         
         return df

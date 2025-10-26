@@ -11,7 +11,7 @@ import seaborn as sns
 
 def load_params():
     """Load parameters from params.yaml"""
-    with open("../params.yaml", "r") as f:
+    with open("params.yaml", "r") as f:
         params = yaml.safe_load(f)
     return params
 
@@ -25,19 +25,19 @@ def evaluate_model():
     params = load_params()
     
     # Load model and test data
-    with open("../models/model.pkl", "rb") as f:
+    with open("models/model.pkl", "rb") as f:
         model = pickle.load(f)
     
-    with open("../data/test_features.pkl", "rb") as f:
+    with open("data/test_features.pkl", "rb") as f:
         X_test = pickle.load(f)
     
-    with open("../data/test_target.pkl", "rb") as f:
+    with open("data/test_target.pkl", "rb") as f:
         y_test = pickle.load(f)
     
-    with open("../data/features.pkl", "rb") as f:
+    with open("data/features.pkl", "rb") as f:
         X = pickle.load(f)
     
-    with open("../data/target.pkl", "rb") as f:
+    with open("data/target.pkl", "rb") as f:
         y = pickle.load(f)
     
     # Make predictions
@@ -64,19 +64,19 @@ def evaluate_model():
         "cv_accuracy_std": float(cv_std)
     }
     
-    os.makedirs("../metrics", exist_ok=True)
-    with open("../" + params["evaluation"]["metrics_file"], "w") as f:
+    os.makedirs("metrics", exist_ok=True)
+    with open(params["evaluation"]["metrics_file"], "w") as f:
         json.dump(metrics, f, indent=2)
     
     # Generate plots
-    os.makedirs("../plots", exist_ok=True)
+    os.makedirs("plots", exist_ok=True)
     
     # Feature importance plot
     feature_importances = pd.Series(model.feature_importances_, index=X.columns)
     plt.figure(figsize=(10, 6))
     feature_importances.sort_values().plot(kind='barh', title="Feature Importance")
     plt.tight_layout()
-    plt.savefig("../plots/feature_importance.png", dpi=300, bbox_inches='tight')
+    plt.savefig("plots/feature_importance.png", dpi=300, bbox_inches='tight')
     plt.close()
     
     # Confusion matrix plot
@@ -87,7 +87,7 @@ def evaluate_model():
     plt.ylabel('True Label')
     plt.xlabel('Predicted Label')
     plt.tight_layout()
-    plt.savefig("../plots/confusion_matrix.png", dpi=300, bbox_inches='tight')
+    plt.savefig("plots/confusion_matrix.png", dpi=300, bbox_inches='tight')
     plt.close()
 
     return metrics
