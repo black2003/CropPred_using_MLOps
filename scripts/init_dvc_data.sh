@@ -3,8 +3,14 @@
 # Script to initialize DVC remote storage with data
 # Run this once to push your data to S3
 
+# Change to project root directory (parent of scripts/)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR/.." || exit 1
+
 echo "DVC Data Initialization Script"
 echo "==============================="
+echo ""
+echo "Working directory: $(pwd)"
 echo ""
 
 # Check if data file exists

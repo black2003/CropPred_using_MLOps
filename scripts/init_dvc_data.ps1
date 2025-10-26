@@ -1,8 +1,14 @@
 # PowerShell Script to initialize DVC remote storage with data
 # Run this once to push your data to S3
 
+# Change to project root directory (parent of scripts/)
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location "$ScriptDir\.."
+
 Write-Host "DVC Data Initialization Script" -ForegroundColor Green
 Write-Host "===============================" -ForegroundColor Green
+Write-Host ""
+Write-Host "Working directory: $(Get-Location)" -ForegroundColor Cyan
 Write-Host ""
 
 # Check if data file exists
