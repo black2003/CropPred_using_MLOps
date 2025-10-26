@@ -26,7 +26,8 @@ venv/
 env/
 ENV/
 .venv/
-.env/
+.env
+.env.local
 
 # Jupyter Notebook
 .ipynb_checkpoints

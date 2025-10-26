@@ -22,6 +22,15 @@ This project implements a complete MLOps pipeline for crop recommendation using 
 │   ├── model_engineering.py       # Model training
 │   ├── model_evaluation.py        # Model evaluation and visualization
 │   └── run_pipeline.py            # Complete pipeline runner
+├── app/                            # FastAPI Application
+│   ├── main.py                     # FastAPI application
+│   ├── test_api.py                 # API test client
+│   ├── index.html                  # Web interface
+│   ├── start.sh                    # Bash startup script
+│   ├── start.ps1                   # PowerShell startup script
+│   ├── Dockerfile                  # Docker configuration
+│   ├── requirements.txt            # App-specific dependencies
+│   └── README.md                   # App documentation
 ├── run_experiments.sh              # Bash script for 12 experiments
 ├── run_experiments.ps1             # PowerShell script for 12 experiments
 ├── run_grid_experiments.sh         # Bash script for grid search (48 experiments)
@@ -147,6 +156,55 @@ dvc exp diff
 ```
 
 📖 **For detailed experimentation guide, see [EXPERIMENTS_GUIDE.md](EXPERIMENTS_GUIDE.md)**
+
+## FastAPI Application
+
+### Starting the API Server
+
+```bash
+# Windows PowerShell
+cd app
+.\start.ps1
+
+# Linux/Mac/WSL
+cd app
+bash start.sh
+
+# Or manually
+cd app
+uvicorn main:app --reload
+```
+
+### Using the Application
+
+1. **Web Interface**: Open `app/index.html` in your browser
+2. **API Documentation**: Visit `http://localhost:8000/docs`
+3. **Test API**: Run `python app/test_api.py`
+
+### API Endpoints
+
+- `GET /` - API information
+- `GET /health` - Health check
+- `GET /model/info` - Model details
+- `POST /predict` - Single prediction
+- `POST /predict/batch` - Batch predictions
+
+### Example Request
+
+```python
+import requests
+
+data = {
+    "N": 90, "P": 42, "K": 43,
+    "temperature": 20.87, "humidity": 82.00,
+    "ph": 6.50, "rainfall": 202.93
+}
+
+response = requests.post("http://localhost:8000/predict", json=data)
+print(response.json())
+```
+
+📖 **For detailed API documentation, see [app/README.md](app/README.md)**
 
 ## Outputs
 

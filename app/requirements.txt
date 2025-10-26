@@ -1,0 +1,13 @@
+# FastAPI Application Dependencies
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.0.0
+python-multipart>=0.0.6
+
+# For testing
+requests>=2.31.0
+
+# ML dependencies (should already be installed from main requirements.txt)
+scikit-learn>=1.0.0
+numpy>=1.21.0
+pandas>=1.3.0

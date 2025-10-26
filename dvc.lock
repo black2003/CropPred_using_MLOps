@@ -89,13 +89,22 @@ stages:
       isexec: true
     - path: src/model_engineering.py
       hash: md5
-      md5: 7ab3c5094477edb9dc24a18696347204
-      size: 1599
+      md5: e9c3b58b34d3b06e09d3e64e8af51bed
+      size: 2496
       isexec: true
     params:
       params.yaml:
         model.algorithm: RandomForest
-        model.n_estimators: 100
+        model.bootstrap: true
+        model.criterion: gini
+        model.max_depth: 20
+        model.max_features: sqrt
+        model.max_leaf_nodes:
+        model.min_impurity_decrease: 0.0
+        model.min_samples_leaf: 1
+        model.min_samples_split: 10
+        model.n_estimators: 200
+        model.oob_score: false
         model.random_state: 42
         training.random_state: 42
         training.test_size: 0.2
@@ -112,8 +121,8 @@ stages:
       isexec: true
     - path: models/model.pkl
       hash: md5
-      md5: 3d1cb6c5f3757d50bf2c4c707b716da6
-      size: 3540030
+      md5: 94d973ed04535b613a6cfa6076a320e4
+      size: 5871217
       isexec: true
   model_evaluation:
     cmd: python src/model_evaluation.py
@@ -130,8 +139,8 @@ stages:
       isexec: true
     - path: models/model.pkl
       hash: md5
-      md5: 3d1cb6c5f3757d50bf2c4c707b716da6
-      size: 3540030
+      md5: 94d973ed04535b613a6cfa6076a320e4
+      size: 5871217
       isexec: true
     - path: src/model_evaluation.py
       hash: md5
@@ -145,7 +154,7 @@ stages:
     outs:
     - path: metrics/metrics.json
       hash: md5
-      md5: d3e91597e6d7cff81d014359dec6310d
+      md5: 8f3ed6415797b73b750d85f7dca433b0
       size: 121
       isexec: true
     - path: plots/confusion_matrix.png
@@ -155,6 +164,6 @@ stages:
       isexec: true
     - path: plots/feature_importance.png
       hash: md5
-      md5: bb0e3ae3bf84bb1073c7b8c7439c6f5b
-      size: 57549
+      md5: 8db28d32a6ff735ba27a4220bc9a00fe
+      size: 57547
       isexec: true

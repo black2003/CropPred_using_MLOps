@@ -1,26 +1,33 @@
 # Core ML and Data Science Libraries
-pandas>=1.3.0
-scikit-learn>=1.0.0
-numpy>=1.21.0
+pandas
+scikit-learn
+numpy
 
 # Data Visualization
-matplotlib>=3.4.0
-seaborn>=0.11.0
+matplotlib
+seaborn
 
 # DVC for ML Pipeline Management
-dvc>=2.0.0
+dvc
 
 # Model Serialization
-joblib>=1.1.0
+joblib
 
 # YAML Configuration
-PyYAML>=6.0
+PyYAML
+
+# FastAPI for Web Application
+fastapi
+uvicorn[standard]
+pydantic
+python-multipart
+requests
 
 # Jupyter Notebook Support (optional)
-jupyter>=1.0.0
-ipykernel>=6.0.0
+jupyter
+ipykernel
 
 # Development and Testing (optional)
-pytest>=6.0.0
-black>=21.0.0
-flake8>=3.9.0
+pytest
+black
+flake8
