@@ -54,7 +54,6 @@ jobs:
           echo "S3: ${{ secrets.DVC_S3_URL }}"
           
       - name: Configure AWS credentials (OIDC)
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         uses: aws-actions/configure-aws-credentials@v4
         with:
             role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
@@ -64,6 +63,22 @@ jobs:
         run: |
           dvc remote add -f aws ${{ secrets.DVC_S3_URL }}
           dvc remote default aws
+
+      - name: Pull data from DVC remote
+        run: |
+          echo "Pulling data from DVC remote..."
+          dvc pull data/Crop_recommendation.csv.dvc || echo "Warning: Could not pull data from remote. Check if data exists in S3."
+          
+      - name: Check if data file exists
+        run: |
+          if [ ! -f "data/Crop_recommendation.csv" ]; then
+            echo "Error: data/Crop_recommendation.csv not found!"
+            echo "Please ensure the data file is pushed to DVC remote storage."
+            exit 1
+          else
+            echo "Data file found successfully"
+            ls -lh data/Crop_recommendation.csv
+          fi
 
       - name: Run DVC pipeline
         run: dvc repro
