@@ -6,6 +6,8 @@ python-multipart>=0.0.6
 
 # For testing
 requests>=2.31.0
+httpx>=0.25.0
+pytest>=7.0.0
 
 # ML dependencies (should already be installed from main requirements.txt)
 scikit-learn>=1.0.0

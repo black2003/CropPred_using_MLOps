@@ -22,6 +22,7 @@ uvicorn[standard]
 pydantic
 python-multipart
 requests
+httpx  # Required for TestClient
 
 # Jupyter Notebook Support (optional)
 jupyter
