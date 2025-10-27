@@ -7,8 +7,8 @@ numpy
 matplotlib
 seaborn
 
-# DVC for ML Pipeline Management
-dvc
+# DVC for ML Pipeline Management (with S3 support)
+dvc[s3]
 
 # Model Serialization
 joblib
