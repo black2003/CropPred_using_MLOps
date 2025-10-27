@@ -1,1 +1,8 @@
 /Crop_recommendation.csv
+# DVC-managed data files - these are outputs from the pipeline
+/raw_data.pkl
+/processed_data.pkl
+/features.pkl
+/target.pkl
+/test_features.pkl
+/test_target.pkl
