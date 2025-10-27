@@ -1,0 +1,142 @@
+name: ci-cd-dvc
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run unit tests
+        run: pytest app/test_main.py -v --disable-warnings
+
+  train-and-push-artifacts:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Debug AWS inputs
+        run: |
+          echo "Role: ${{ secrets.AWS_ROLE_TO_ASSUME }}"
+          echo "Region: ${{ secrets.AWS_REGION }}"
+          echo "S3: ${{ secrets.DVC_S3_URL }}"
+          
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+            role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+            aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Configure DVC remote
+        run: |
+          dvc remote add -d -f myremote ${{ secrets.DVC_S3_URL }}
+          dvc remote list
+          
+      - name: Install DVC S3
+        run: pip install dvc-s3
+        
+      - name: Pull data from DVC remote
+        run: |
+          echo "Pulling data from DVC remote..."
+          dvc pull data/Crop_recommendation.csv.dvc
+          echo "DVC pull completed"
+          
+      - name: Check if data file exists
+        run: |
+          if [ ! -f "data/Crop_recommendation.csv" ]; then
+            echo "Error: data/Crop_recommendation.csv not found!"
+            echo "Please ensure the data file is pushed to DVC remote storage."
+            exit 1
+          else
+            echo "Data file found successfully"
+            ls -lh data/Crop_recommendation.csv
+          fi
+      - name: Run DVC pipeline
+        run: dvc repro
+
+      - name: Push DVC artifacts to S3
+        run: dvc push
+
+      - name: Show metrics (if available)
+        run: |
+          echo "Metrics:"
+          cat metrics/metrics.json || echo "No metrics.json found"
+      - name: Upload metrics artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: metrics
+          path: metrics/metrics.json
+
+      - name: Upload dvclive logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dvclive
+          path: dvclive
+
+  build-and-push-image:
+    needs: train-and-push-artifacts
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Install DVC and pull
+        run: |
+          pip install --upgrade pip
+          pip install dvc[s3] fastapi uvicorn
+          dvc remote add -d -f myremote ${{ secrets.DVC_S3_URL }}
+          dvc pull      
+     
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: croppred_using_mlops
+          IMAGE_TAG: latest
+        run: |
+          aws ecr create-repository --repository-name $ECR_REPOSITORY
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
