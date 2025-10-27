@@ -12,16 +12,18 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 
 # Copy application
-# Copy source
 COPY app/ app/
 COPY dvc.yaml dvc.yaml
+COPY dvc.lock dvc.lock
 COPY params.yaml params.yaml
 COPY .dvc/ .dvc/
 COPY src/ src/
-COPY model/ model/
+
+# Create directories for DVC-managed outputs
+RUN mkdir -p models data metrics plots
 
 # Expose port
 EXPOSE 8000
 
-# When container starts: fetch model/data from S3 via DVC, then launch API
-CMD uvicorn app.main:app --host 0.0.0.0 --port 8000
+# When container starts: pull model and data from S3 via DVC, then launch API
+CMD dvc pull && uvicorn app.main:app --host 0.0.0.0 --port 8000
