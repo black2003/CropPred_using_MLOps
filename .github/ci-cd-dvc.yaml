@@ -61,13 +61,14 @@ jobs:
 
       - name: Configure DVC remote
         run: |
-          dvc remote add -f aws ${{ secrets.DVC_S3_URL }}
-          dvc remote default aws
+          dvc remote add -d -f myremote ${{ secrets.DVC_S3_URL }}
+          dvc remote list
 
       - name: Pull data from DVC remote
         run: |
           echo "Pulling data from DVC remote..."
-          dvc pull data/Crop_recommendation.csv.dvc || echo "Warning: Could not pull data from remote. Check if data exists in S3."
+          dvc pull data/Crop_recommendation.csv.dvc
+          echo "DVC pull completed"
           
       - name: Check if data file exists
         run: |
@@ -123,7 +124,8 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install dvc[s3] fastapi uvicorn
-          dvc pull -r aws      
+          dvc remote add -d -f myremote ${{ secrets.DVC_S3_URL }}
+          dvc pull      
      
       - name: Login to Amazon ECR
         id: login-ecr
