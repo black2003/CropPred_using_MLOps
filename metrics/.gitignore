@@ -1,0 +1,2 @@
+# DVC-managed metrics files - these are outputs from the pipeline
+/metrics.json
