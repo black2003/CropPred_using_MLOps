@@ -1,0 +1,3 @@
+# DVC-managed plot files - these are outputs from the pipeline
+/confusion_matrix.png
+/feature_importance.png
