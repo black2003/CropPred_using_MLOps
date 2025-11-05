@@ -19,12 +19,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application files
 COPY app/ app/
 COPY dvc.yaml dvc.yaml
+COPY dvc.lock dvc.lock
 COPY params.yaml params.yaml
 COPY .dvc/ .dvc/
 COPY src/ src/
-
-# Copy dvc.lock if it exists (optional)
-COPY dvc.lock dvc.lock 2>/dev/null || true
 
 # Create directories for DVC-managed outputs
 RUN mkdir -p models data metrics plots
