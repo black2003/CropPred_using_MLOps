@@ -3,6 +3,8 @@ FastAPI Application for Crop Recommendation Prediction
 """
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 import pickle
 import numpy as np
@@ -89,16 +91,43 @@ async def startup_event():
         print(f"Error loading model: {e}")
         print("Make sure to train the model first using: dvc repro")
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 async def root():
-    """Root endpoint"""
+    """Serve the HTML frontend"""
+    try:
+        html_path = os.path.join(os.path.dirname(__file__), "index.html")
+        with open(html_path, "r") as f:
+            return f.read()
+    except FileNotFoundError:
+        return HTMLResponse(content="""
+            <html>
+                <head><title>Crop Recommendation API</title></head>
+                <body>
+                    <h1>Welcome to Crop Recommendation API</h1>
+                    <p>Version: 1.0.0</p>
+                    <h2>API Endpoints:</h2>
+                    <ul>
+                        <li><a href="/docs">/docs</a> - Interactive API Documentation</li>
+                        <li><a href="/health">/health</a> - Health Check</li>
+                        <li><a href="/model/info">/model/info</a> - Model Information</li>
+                        <li>POST /predict - Single Prediction</li>
+                        <li>POST /predict/batch - Batch Prediction</li>
+                    </ul>
+                </body>
+            </html>
+        """)
+
+@app.get("/api")
+async def api_info():
+    """API information endpoint"""
     return {
         "message": "Welcome to Crop Recommendation API",
         "version": "1.0.0",
         "endpoints": {
             "predict": "/predict",
             "health": "/health",
-            "model_info": "/model/info"
+            "model_info": "/model/info",
+            "docs": "/docs"
         }
     }
 
