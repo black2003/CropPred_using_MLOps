@@ -23,7 +23,7 @@ COPY dvc.lock dvc.lock
 COPY params.yaml params.yaml
 COPY .dvc/ .dvc/
 COPY src/ src/
-
+# new door
 # Create directories for DVC-managed outputs
 RUN mkdir -p models data metrics plots
 
@@ -35,3 +35,4 @@ EXPOSE 8000
 CMD dvc config core.no_scm true && \
     dvc pull -v && \
     uvicorn app.main:app --host 0.0.0.0 --port 8000
+
