@@ -15,8 +15,16 @@ from main import app
 client = TestClient(app)
 
 def test_root():
-    """Test root endpoint"""
+    """Test root endpoint - now returns HTML"""
     response = client.get("/")
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "text/html; charset=utf-8"
+    # Check that HTML content is returned
+    assert "Crop Recommendation" in response.text or "<html>" in response.text
+
+def test_api_info():
+    """Test API info endpoint - returns JSON"""
+    response = client.get("/api")
     assert response.status_code == 200
     data = response.json()
     assert "message" in data
