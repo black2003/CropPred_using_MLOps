@@ -71,11 +71,27 @@ crop_classes = [
 def load_model():
     """Load the trained model"""
     global model
-    model_path = os.path.join("..", "models", "model.pkl")
+    # Try multiple paths for model location
+    possible_paths = [
+        "/app/models/model.pkl",  # Docker container path
+        os.path.join("..", "models", "model.pkl"),  # Local development path
+        "models/model.pkl",  # Current directory
+        os.path.join(os.path.dirname(__file__), "..", "models", "model.pkl")  # Relative to app dir
+    ]
     
-    if not os.path.exists(model_path):
-        raise FileNotFoundError(f"Model file not found at {model_path}")
+    model_path = None
+    for path in possible_paths:
+        if os.path.exists(path):
+            model_path = path
+            break
     
+    if model_path is None:
+        print(f"Model file not found. Searched paths:")
+        for path in possible_paths:
+            print(f"  - {path} (exists: {os.path.exists(path)})")
+        raise FileNotFoundError("Model file not found in any expected location")
+    
+    print(f"Loading model from: {model_path}")
     with open(model_path, "rb") as f:
         model = pickle.load(f)
     
