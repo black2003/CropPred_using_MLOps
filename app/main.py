@@ -199,10 +199,18 @@ async def predict_crop(features: CropFeatures):
         ]])
         
         # Make prediction
-        prediction = model.predict(input_data)[0]
+        prediction_idx = model.predict(input_data)[0]
         
         # Get prediction probabilities
         probabilities = model.predict_proba(input_data)[0]
+        
+        # Convert numeric prediction to crop name
+        # The model predicts indices (0, 1, 2...), map to crop names
+        if isinstance(prediction_idx, (int, np.integer)):
+            predicted_crop = crop_classes[int(prediction_idx)]
+        else:
+            # If model predicts string directly (unlikely)
+            predicted_crop = str(prediction_idx)
         
         # Get top 3 predictions
         top_3_indices = np.argsort(probabilities)[-3:][::-1]
@@ -215,11 +223,10 @@ async def predict_crop(features: CropFeatures):
         ]
         
         # Get confidence for predicted class
-        predicted_idx = crop_classes.index(prediction)
-        confidence = float(probabilities[predicted_idx])
+        confidence = float(probabilities[int(prediction_idx)])
         
         return CropPrediction(
-            predicted_crop=prediction,
+            predicted_crop=predicted_crop,
             confidence=confidence,
             top_3_predictions=top_3_predictions,
             input_features={
@@ -234,7 +241,10 @@ async def predict_crop(features: CropFeatures):
         )
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
+        import traceback
+        error_detail = f"Prediction error: {str(e)}\n{traceback.format_exc()}"
+        print(error_detail)  # Log to console
+        raise HTTPException(status_code=500, detail=error_detail)
 
 @app.post("/predict/batch")
 async def predict_batch(features_list: List[CropFeatures]):
@@ -261,13 +271,19 @@ async def predict_batch(features_list: List[CropFeatures]):
             ]])
             
             # Make prediction
-            prediction = model.predict(input_data)[0]
+            prediction_idx = model.predict(input_data)[0]
             probabilities = model.predict_proba(input_data)[0]
-            predicted_idx = crop_classes.index(prediction)
-            confidence = float(probabilities[predicted_idx])
+            
+            # Convert numeric prediction to crop name
+            if isinstance(prediction_idx, (int, np.integer)):
+                predicted_crop = crop_classes[int(prediction_idx)]
+            else:
+                predicted_crop = str(prediction_idx)
+            
+            confidence = float(probabilities[int(prediction_idx)])
             
             predictions.append({
-                "predicted_crop": prediction,
+                "predicted_crop": predicted_crop,
                 "confidence": confidence,
                 "input_features": features.dict()
             })
@@ -275,5 +291,8 @@ async def predict_batch(features_list: List[CropFeatures]):
         return {"predictions": predictions, "count": len(predictions)}
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Batch prediction error: {str(e)}")
+        import traceback
+        error_detail = f"Batch prediction error: {str(e)}\n{traceback.format_exc()}"
+        print(error_detail)  # Log to console
+        raise HTTPException(status_code=500, detail=error_detail)
 
